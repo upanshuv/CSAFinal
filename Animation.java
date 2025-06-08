@@ -25,10 +25,10 @@ public class Animation {
     }
 
     // Call this from GamePanel when game ends
-    public static void showEndScreen(boolean win) {
+    public static void showEndScreen(boolean win, boolean mercied) {
         SwingUtilities.invokeLater(() -> {
             frame.getContentPane().removeAll();
-            frame.add(new EndScreen(win));
+            frame.add(new EndScreen(win, mercied));
             frame.revalidate();
             frame.repaint();
         });

@@ -973,10 +973,20 @@ public class GamePanel extends JPanel implements ActionListener {
         hero.getPanelWidth(this.getWidth());
 
         if (playerHealth.getHealth() <= 0) {
-            Animation.showEndScreen(false); // dead screen
+            Animation.showEndScreen(false, false); // dead screen
         }
         if (score >= 10) {
-            Animation.showEndScreen(true); // win screen
+            int count = 0;
+            for (int i=0; i< enemyTriggers.size(); i++) {
+                if (enemyTriggers.get(i).isMercied()) {
+                    count++;
+                }
+            }
+            if (count < 10) {
+                Animation.showEndScreen(true, false); // win screen
+            } else {
+                Animation.showEndScreen(true, true); // mercy screen
+            }
         }
     }
 }

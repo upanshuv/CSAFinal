@@ -4,11 +4,18 @@ import java.awt.*;
 public class EndScreen extends JPanel {
     private Image endImage;
 
-    public EndScreen(boolean win) {
+    public EndScreen(boolean win, boolean mercied) {
         // Use different images for win/lose
-        if (win) {
+        if (win && !mercied)
+        {
             endImage = new ImageIcon("./images/background/winendscreen.png").getImage();
-        } else {
+        }
+        else if (win && mercied)
+        {
+            endImage = new ImageIcon("./images/background/mercyendscreen.png").getImage();
+        }
+        else
+        {
             endImage = new ImageIcon("./images/background/deadendscreen.png").getImage();
         }
     }
