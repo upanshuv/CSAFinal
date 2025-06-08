@@ -4,18 +4,18 @@ import java.awt.Rectangle;
 
 public class Hero extends GameObject {
 
-    private ImageIcon[][] icons;
-    private int phase;
-    private int direction;
-    private int phaseCounter;
-    private int dx;
-    private int dy;
-    private int panelHeight = 0;
-    private int panelWidth = 0;
-    private int speed = 0;
-    private boolean soulMode;
-    private Image soulImage;
-    private Rectangle soulHitbox;
+    private ImageIcon[][] icons; // 2D array to hold icons for each direction and phase
+    private int phase; // animation phase
+    private int direction; //direction of the hero (0: down, 1: left, 2: right, 3: up)
+    private int phaseCounter; //animation phase counter
+    private int dx; // horizontal velocity
+    private int dy; // vertical velocity
+    private int panelHeight = 0; // height of the panel to restrict movement
+    private int panelWidth = 0; // width of the panel to restrict movement
+    private int speed = 0; // speed of the hero
+    private boolean soulMode; // boolean to check if the hero is in soul mode
+    private Image soulImage; // image for the soul
+    private Rectangle soulHitbox; // hitbox for the soul, used to check collisions in soul mode
 
     public Hero(int x, int y) {
         super(x, y);
@@ -41,20 +41,41 @@ public class Hero extends GameObject {
 
     }
 
+    /** <enter>
+     * Set the soul mode for the hero
+     * 
+     * @param soulMode true if in soul mode, false otherwise
+     */
     public void setSoulMode(boolean soulMode) { //used to keep track of soulMode within class for bounds
         this.soulMode = soulMode;
         System.out.println("Soul mode set to: " + soulMode);
     }
 
+    /**<enter>
+     * Get the hitbox for the soul, used to check collisions in soul mode
+     * 
+     * @return Rectangle representing the hitbox of the soul
+     */
     public Rectangle getSoulHitbox() {
         soulHitbox.setLocation(this.getX(), this.getY());
         return soulHitbox;
     }
 
+    /**<center>
+     * Set the position of the hero
+     * 
+     * @param x x-coordinate
+     * @param y y-coordinate
+     */
     public void setPosition(int x, int y) {
         this.setLocation(x, y);
     }
 
+    /**<center>
+     * Get the image of the soul
+     * 
+     * @return Image representing the soul
+     */
     public Image getSoul(){
         if (soulImage == null) {
             soulImage = new ImageIcon("./images/character//soul/soul.png").getImage();
@@ -62,6 +83,12 @@ public class Hero extends GameObject {
         return soulImage;
     }
 
+    /**<center>
+     * Get the ImageIcon for the hero, depending on the current direction and phase
+     * If in soul mode, returns the soul image
+     * 
+     * @return ImageIcon representing the hero or soul
+     */
     public ImageIcon getImageIcon() {
         if (soulMode) {
             return new ImageIcon(getSoul());
@@ -161,18 +188,35 @@ public class Hero extends GameObject {
         
     }
 
+    /**<center>
+     * Get the current direction of the hero
+     * 
+     * @return int representing the direction (0: down, 1: left, 2: right, 3: up)
+     */
+
     public int getDirection(){
         return direction;  
     }
 
+    /** <enter>
+     * get the height of the panel to restrict movement
+     */
     public void getPanelHeight(int panelHeight){ 
         this.panelHeight = panelHeight;
     }
 
+    /** <enter>
+     * set the speed of the hero
+     * 
+     * @param speed speed of the hero
+     */
     public void setSpeed(int speed){
         this.speed = 20;
     }
 
+    /** <enter>
+     * get the width of the panel to restrict movement
+     */
     public void getPanelWidth(int panelWidth){ 
         this.panelWidth = panelWidth;
     }

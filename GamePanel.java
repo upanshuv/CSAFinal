@@ -24,72 +24,105 @@ import javax.sound.sampled.Clip;
 
 public class GamePanel extends JPanel implements ActionListener {
 
-    private BufferedImage background;
-    private Hero hero;
-    private int secondsCount = 0;
-    private Door rightEnteranceToClassRoom;
-    private int panelHeight;
-    private int panelWidth;
-    private int frameCount;
-    private int fightAnimationIterator;
-    private ArrayList<Room> rooms;
-    private ArrayList<EnemyTrigger> enemyTriggers;
-    private String[][] map;
-    private boolean triggersPlaced;
-    private boolean battleActive;
-    private MainBattleButton fightButton;
-    private MainBattleButton itemButton;
-    private MainBattleButton actButton;
-    private MainBattleButton mercyButton;
-    private ArrayList<String> genericEnemies;
-    private int randomEnemyInt; // will be used to select a random enemy from the genericEnemies list
-    private int activeEnemyHealth;
-    private boolean fightAnimationActive;
-    private ArrayList<ImageIcon> fightAnimation;
+    // --- UI & Rendering ---
+    private BufferedImage background; //background image
+    private int panelHeight; //height of gamepanel
+    private int panelWidth; //width of gamepanel
+    private int frameCount; // total number of rendered frames (used for animations)
+    private int score; // used to display user score (from enemies defeated or mercied)
+
+    // --- Player & Hero ---
+    private Hero hero; // the player character
+    private int heroXBeforeBattle; // hero's x position before battle (used to replace hero after battles)
+    private int heroYBeforeBattle; // hero's y position before battle
+
+    // --- Rooms & Doors ---
+    private ArrayList<Room> rooms; // list of rooms in the game
+    private Room activeRoom; //room currently being rendered
+    private String[][] map; // used for visualization of rooms and doors
+
+    // --- Enemy & Battle System ---
+    private ArrayList<EnemyTrigger> enemyTriggers;  // list of enemy triggers in the game
+    private ArrayList<String> genericEnemies; // list of generic enemy names in the game
+    private int numActiveEnemies; // number of active enemies in the game
+    private int randomEnemyInt; // index for random enemy selection
+    private String enemyClassName; // name of the active enemy 
+    private boolean triggersPlaced; // boolean tracking whether a room has had its enemy triggers rendered yet
+    private boolean battleActive; // a boolean tracking whether a battle is currently active
+    private boolean fightAnimationActive; // a boolean determining whether the fight animation is currently active
+    private boolean displayDamageAnimation; // a boolean determining when to display enemy damage animaiton
+    private boolean gameOver; // a boolean tracking whether the game is over
+    private int damageAnimationCounter; // a counter for the damage animation frames
+    private int fightAnimationIterator; //iterates through the fight animation frames
+    private ArrayList<ImageIcon> fightAnimation; //arraylist of fight animation frames
+    private int activeEnemyHealth; // health of the active enemy (used for battle logic)
+    private TenzinEnemy tenzinEnemy; //enemy object for the Tenzin enemy
+
+    // --- Battle Buttons ---
+    private MainBattleButton fightButton; // the fight button
+    private MainBattleButton itemButton; // the item button
+    private MainBattleButton actButton; // the act button
+    private MainBattleButton mercyButton; // the mercy button
+
+    // --- Turn & Attack Logic ---
     private Boolean turn; // true for player, false for enemy
-    private boolean displayDamageAnimation;
-    private int damageAnimationCounter;
-    private TenzinEnemy tenzinEnemy; 
-    private boolean centerSoul; // used to center the soul in the middle of the screen when enemy turn starts
-    private int heroXBeforeBattle;
-    private int heroYBeforeBattle; 
-    private String enemyClassName;
-    private ArrayList<String> attacks; 
-    private String activeAttack;
-    private ArrayList<FallingBlock> fallingBlocks; // used to store falling blocks for the "fallingBlocks" attack
-    private Health playerHealth;
-    private Health enemyHealth;
-    private Mercy mercyBar;
-    private ArrayList<FallingBlock> fallingBlocksAtDifferentSpeeds; // used to store falling blocks for the "fallingBlocksAtDifferentSpeeds" attack
-    private Room activeRoom;
-    //player will be invincible until this frame reached
-    private int invincibilityFrame;
-    private boolean tookDamageThisFrame;
-    private int mercyLevel;
-    private int numActiveEnemies;
-    private String taleSound;
-    private String runeSound;
-    private static Clip currentClip;
-    private int score;
+    private ArrayList<String> attacks; // list of attacks available to the enemy
+    private String activeAttack; // the currently active attack (used for rendering and logic)
+    private boolean centerSoul; // a boolean determining whether the soul should be centered in the middle of the screen
+
+    // --- Attack Objects ---
+    private ArrayList<FallingBlock> fallingBlocks; // for "fallingBlocks" attack
+    private ArrayList<FallingBlock> fallingBlocksAtDifferentSpeeds; // for "fallingBlocksAtDifferentSpeeds" attack
+
+    // --- Health & Mercy Bars ---
+    private Health playerHealth; // player health bar
+    private Health enemyHealth; // enemy health bar
+    private Mercy mercyBar; // enemy mercy bar (battle ends when full)
+    private int mercyLevel; // tracks mercy level of enemy
+
+    // --- Invincibility & Damage ---
+    private int invincibilityFrame; // frame when the player becomes invincible after taking damage
+    private boolean tookDamageThisFrame; // boolean tracking whether the player took damage this frame
+
+    // --- Sound ---
+    private String taleSound; // base game music
+    private String runeSound; // battle music
+    private static Clip currentClip; // current sound clip being played
+
 
     public GamePanel() {
 
-        mercyLevel = 0; // used to track mercy level, increased by ACTing, enemy mercyable when level >= 5
+        //INIT FIELDS
+
+        invincibilityFrame = 0; 
         tookDamageThisFrame = false;
-        invincibilityFrame = 0; // player will be invincible for 60 frames after taking damage
-        frameCount = 0;
-        activeEnemyHealth = 0;
-        fightAnimationIterator = 0;
         turn = true;
+
         heroXBeforeBattle = 0;
         heroYBeforeBattle = 0;
-        numActiveEnemies = 10; // used to track number of active enemies in the room
-    
-        centerSoul = false; // used to center the soul in the middle of the screen when enemy turn starts
-        
+
+        centerSoul = false;
+
+        mercyLevel = 0;
+        activeEnemyHealth = 0;
+        score = 0;
+        numActiveEnemies = 10;
+
+        frameCount = 0;
+        fightAnimationIterator = 0;
+
         activeRoom = null;
 
-        score = 0;
+        displayDamageAnimation = false; 
+        damageAnimationCounter = 0; 
+        fightAnimationActive = false; 
+        
+        triggersPlaced = false;
+
+        battleActive = false;
+        fightAnimationActive = false;
+        gameOver = false;
+
 
         //INIT ATTACKS //
 
@@ -129,42 +162,42 @@ public class GamePanel extends JPanel implements ActionListener {
             }
         }
 
-        displayDamageAnimation = false; // used to display damage animation
-        damageAnimationCounter = 0; // used to control damage animation rendering
-        fightAnimationActive = false; // used to control fight animation rendering
-
         //INIT ANIMATIONS END //
 
         // INIT DOORS AND ROOMS //
 
         map = new String[][]{ // only used for visualization
-            {"Mathroom"  ,  "JacobRoom"},
-            {"RedFloorRoom","TileRoom", "ClassRoom"}, 
-                        {"UpanshuRoom",}
+            {"Mathroom"  ,  "TopRoom"},
+            {"LeftRoom","TileRoom", "RightRoom"}, 
+                        {"BottomRoom",}
         };
 
         rooms = new ArrayList<Room>();
         rooms.add(new Room("./images/background/gray_tile_background.png", "TileRoom"));
-        rooms.add(new Room("./images/background/ClassRoom.jpg", "ClassRoom"));
-        rooms.add(new Room("./images/background/UpanshuRoom.jpg", "UpanshuRoom"));
-        rooms.add(new Room("./images/background/JacobRoom.jpg", "JacobRoom"));
-        rooms.add(new Room("./images/background/RedFloorRoom.png", "RedFloorRoom"));
+        rooms.add(new Room("./images/background/RightRoom.jpg", "RightRoom"));
+        rooms.add(new Room("./images/background/BottomRoom.jpg", "BottomRoom"));
+        rooms.add(new Room("./images/background/TopRoom.jpg", "TopRoom"));
+        rooms.add(new Room("./images/background/LeftRoom.png", "LeftRoom"));
 
         for (Room room : rooms) {
             ArrayList<Door> roomDoors = new ArrayList<Door>();
             if (room.getKey().equals("TileRoom")) {
-                roomDoors.add(new Door("ClassRoom", "right"));
-                roomDoors.add(new Door("UpanshuRoom", "down"));
-                roomDoors.add(new Door("JacobRoom", "up"));
-                roomDoors.add(new Door("RedFloorRoom", "left"));
+                roomDoors.add(new Door("RightRoom", "right"));
+                roomDoors.add(new Door("BottomRoom", "down"));
+                roomDoors.add(new Door("TopRoom", "up"));
+                roomDoors.add(new Door("LeftRoom", "left"));
                 room.setActive(true);
-            } else if (room.getKey().equals("ClassRoom")) {
+            } 
+            else if (room.getKey().equals("RightRoom")) {
                 roomDoors.add(new Door("TileRoom", "left"));
-            } else if (room.getKey().equals("UpanshuRoom")) {
+            } 
+            else if (room.getKey().equals("BottomRoom")) {
                 roomDoors.add(new Door("TileRoom", "up"));
-            } else if (room.getKey().equals("JacobRoom")) {
+            } 
+            else if (room.getKey().equals("TopRoom")) {
                 roomDoors.add(new Door("TileRoom", "down"));
-            } else if (room.getKey().equals("RedFloorRoom")) {
+            } 
+            else if (room.getKey().equals("LeftRoom")) {
                 roomDoors.add(new Door("TileRoom", "right"));
             }
             room.addDoors(roomDoors);
@@ -175,7 +208,6 @@ public class GamePanel extends JPanel implements ActionListener {
 
         //INIT BUTTONS//
 
-        //TODO implement button images
         fightButton = new MainBattleButton("./images/buttons/mainBattleButtons/fightUnselected.png", "./images/buttons/mainBattleButtons/fightSelected.png", "fight");
         fightButton.setSelected(true);
         itemButton = new MainBattleButton("./images/buttons/mainBattleButtons/itemUnselected.png", "./images/buttons/mainBattleButtons/itemSelected.png", "item");
@@ -185,14 +217,10 @@ public class GamePanel extends JPanel implements ActionListener {
 
         // INIT ENEMY TRIGGERS //
 
-        triggersPlaced = false;
         enemyTriggers = new ArrayList<EnemyTrigger>();
         for (int i = 0; i < 10; i++) {
             enemyTriggers.add(new EnemyTrigger(9999, 9999));
         }
-
-        battleActive = false;
-        fightAnimationActive = false;
 
         this.setLayout(null);
         hero = new Hero(100, 100);
@@ -201,11 +229,15 @@ public class GamePanel extends JPanel implements ActionListener {
 
         //INIT ENEMY TRIGGERS END //
 
+        //INIT BACKGROUND//
+
         try {
             background = ImageIO.read(imageURL);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        //INIT HERO AND GAMELOOP//
 
         hero.setVisible(true);
 
@@ -221,27 +253,12 @@ public class GamePanel extends JPanel implements ActionListener {
 
         genericEnemies = new ArrayList<String>();
         genericEnemies.add("TenzinEnemy");
-        //TODO add more enemies here
-
-        // INIT DISPLAY //
-        //textDihsplay = new Display(1);
-        //textDihsplay.setBounds(0, 0, 600, 100);//mess with in old thing
-        //this.add(textDihsplay);
-        //textDihsplay.setVisible(false);
-        // END INIT DISPLAY //
 
         // INIT BARS //
         playerHealth = new Health(0, 0);
-        playerHealth.setHealth(10); // set initial health to 10
-        //this.add(playerHealth);
-        //playerHealth.setVisible(false);
-
+        playerHealth.setHealth(10); 
         enemyHealth = new Health(320, 0);
-        //this.add(enemyHealth);
-        //enemyHealth.setVisible(false);
-
         mercyBar = new Mercy(0, 45);
-        // END INIT BARS //
 
         // INIT SOUNDS //
         taleSound = "./sounds/Undertale-Ruins.wav";
@@ -249,7 +266,7 @@ public class GamePanel extends JPanel implements ActionListener {
         playSound(taleSound);
         // END INIT SOUNDS //
 
-        // keylistener here //
+        // INIT KEYLISTENER //
         this.addKeyListener(new KeyListener() {
 
             @Override
@@ -302,6 +319,7 @@ public class GamePanel extends JPanel implements ActionListener {
                                 System.out.println("Act");
                             } else if (itemButton.isSelected()) {
                                 System.out.println("Item");
+                                doItem();
                             } else if (mercyButton.isSelected()) {
                                 doMercy();
                                 System.out.println("Mercy");
@@ -365,7 +383,7 @@ public class GamePanel extends JPanel implements ActionListener {
             private void doACT() {
                 mercyLevel++;
                 actButton.setSelected(false);
-                //TODO update mercy bar
+
                 mercyBar.setMercy(mercyLevel);
                 setEnemyTurn();
             }
@@ -381,8 +399,6 @@ public class GamePanel extends JPanel implements ActionListener {
                     }
                     endBattle();
                 } else {
-                    System.out.println("You need to increase your mercy level to spare the enemy.");
-                    System.out.println("You Can increase your mercy level by ACTing on the enemy.");
                     mercyButton.setSelected(false);
                     setEnemyTurn();
                 }
@@ -436,12 +452,19 @@ public class GamePanel extends JPanel implements ActionListener {
 
     }
 
+    /** <enter> * Method to handle damage to the enemy.
+     * This method decreases the active enemy's health by 1 and updates the enemy health bar.
+     */
     public void doDamage(){        
-        activeEnemyHealth --; // deal damage to the enemy
+        activeEnemyHealth --; 
         enemyHealth.setHealth(activeEnemyHealth);
-        System.out.println("enemy took damage");
     }
 
+
+    /**
+     * Method to set the background image of the game panel.
+     * @param imagePath The path to the image file.
+     */
     public void setBackground(String imagePath) {
         URL imageURL = getClass().getResource(imagePath);
 
@@ -452,12 +475,32 @@ public class GamePanel extends JPanel implements ActionListener {
         }
     }
 
+    /**
+     * Method to start the fight animation 
+     * This method sets the fightAnimationActive boolean to true, indicating that the fight animation is active.
+     * This change will result in the enemies turn being set after the attack is rendered
+     * in paintComponent.
+     */
     public void doFIGHT() {
         fightAnimationActive = true;
-        System.out.println("Active Enemy Health: " + activeEnemyHealth);
-        
+    }
+    
+    /** <enter>
+     * Method to handle item usage in the game.
+     * This method increases the player's health by 1 and sets the enemy's turn.
+     * It is called when the player uses an item during battle.
+     */
+    public void doItem(){
+        playerHealth.setHealth(playerHealth.getHealth() + 1); // heal player by 1
+        setEnemyTurn(); 
     }
 
+    /** <enter>
+     * Method to set the room for the game panel.
+     * This method sets the background image of the game panel to the image path of the given room,
+     * resets the enemy triggers' positions, and ensures that they do not overlap with each other or the hero.
+     * @param room The room to set for the game panel.
+     */
     public void setRoom(Room room) {
         this.setBackground(room.getImagePath());
         //reset triggers
@@ -479,13 +522,19 @@ public class GamePanel extends JPanel implements ActionListener {
         repaint();
     }
 
+    /** <enter>
+     * Method to activate battle mode.
+     * This method resets the active enemy health, mercy level, and sets the background to the battle background.
+     * It also resets the positions of the battle buttons and sets the fight button as selected.
+     * Finally, it sets the battleActive boolean to true, selects a random enemy, and plays the battle sound.
+     */
     public void activateBattleMode() {
 
         activeEnemyHealth = 10; // reset active enemy health
         enemyHealth.setHealth(activeEnemyHealth);
         mercyLevel = 0; // reset mercy level
         mercyBar.setMercy(0); 
-        //TODO implement buttons
+        mercyBar.setStartImage();
         this.setBackground("./images/background/GenericBattle.png");
 
         fightButton.getBounds().setLocation((int)fightButton.getBounds().getX(), (int)fightButton.getBounds().getY());
@@ -501,7 +550,9 @@ public class GamePanel extends JPanel implements ActionListener {
 
         battleActive = true;
 
-        randomEnemyInt = (int) (Math.random() * genericEnemies.size()); //will be used to select a random enemy
+    
+        randomEnemyInt = (int) (Math.random() * genericEnemies.size());
+        enemyClassName = genericEnemies.get(randomEnemyInt);
 
         playSound(runeSound);
     }
@@ -658,16 +709,15 @@ public class GamePanel extends JPanel implements ActionListener {
         // enemy rendering
 
         if (battleActive){
-            randomEnemyInt = (int) (Math.random() * genericEnemies.size());
-            enemyClassName = genericEnemies.get(randomEnemyInt);
             switch (enemyClassName){
                 case "TenzinEnemy":
                     g.drawImage(tenzinEnemy.getImage().getImage(), 200, 60, this);
                     break;
 
-                //TODO implement other enemies
+                // no other enemies implemented
             }
         }
+
         //fight animation rendering 
 
         if(fightAnimationActive) {
@@ -714,6 +764,12 @@ public class GamePanel extends JPanel implements ActionListener {
 
     }
 
+    /** <enter>
+     * Method to end the battle.
+     * This method decreases the number of active enemies in the room, resets the battleActive boolean,
+     * resets the hero's position, and resets the room.
+     * It also plays the tale sound and increases the score by 1.
+     */
     public void endBattle() {
         numActiveEnemies--; // decrease number of active enemies in the room
         if (numActiveEnemies <= 0) {
@@ -730,6 +786,11 @@ public class GamePanel extends JPanel implements ActionListener {
         playSound(taleSound);
     }
 
+    /** <enter>
+     * Method to deal damage to the player.
+     * This method decreases the player's health by 1, sets the invincibility frame,
+     * and sets tookDamageThisFrame to true to prevent multiple hits in one frame.
+     */
     public void doDamageToPlayer() {
         playerHealth.setHealth(playerHealth.getHealth() - 1); // deal damage to the player
         System.out.println("Player took damage");
@@ -737,6 +798,11 @@ public class GamePanel extends JPanel implements ActionListener {
         tookDamageThisFrame = true; // set tookDamageThisFrame to true to prevent multiple damage in one frame
     }
 
+    /** <enter>
+     * Method to set the enemy's turn.
+     * This method sets the active enemy health, resets the fight animation, and prepares the attack to be rendered.
+     * It also sets the turn to false, indicating that it is now the enemy's turn.
+     */
     public void setEnemyTurn(){
         
         System.out.println("Active Enemy Health: " + activeEnemyHealth);
@@ -770,9 +836,6 @@ public class GamePanel extends JPanel implements ActionListener {
                 }
                 break;
         }
-        
-        
-        System.out.println("Active Attack: " + activeAttack);
         fightButton.setSelected(false);
         if (battleActive){
             hero.setSoulMode(true);
@@ -780,7 +843,11 @@ public class GamePanel extends JPanel implements ActionListener {
         }
     }
 
-    //for sounds
+    /** <enter>
+     * Method to play a sound from a given location.
+     * This method stops the current clip if it is running, closes it, and then plays the new sound from the specified file location.
+     * @param location The file path of the sound to be played.
+     */
     public static void playSound(String location) {
         try {
 

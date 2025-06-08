@@ -70,5 +70,13 @@ public class Mercy {
         return y;
     }
 
+    public void setStartImage(){
+        try {
+            image = new ImageIcon("images/mercybar/mercybar-start.png"); // Reset to start image
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }
 

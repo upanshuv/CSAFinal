@@ -8,11 +8,18 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 public class Health {
-    private Rectangle bounds;
-    private int x;
-    private int y;
-    private int health;
-    private ImageIcon image;
+    private Rectangle bounds; // Rectangle to represent the health bar's bounds
+    private int x; // X coordinate of the health bar
+    private int y; // Y coordinate of the health bar
+    private int health; // Current health value
+    private ImageIcon image; // ImageIcon to hold the health bar image
+
+    /** <enter>
+     * Constructor to initialize the health bar at specified coordinates.
+     * 
+     * @param x X coordinate of the health bar.
+     * @param y Y coordinate of the health bar.
+     */
 
     public Health(int x, int y) {
         this.x = x;
@@ -27,24 +34,48 @@ public class Health {
         }
     }
 
+    /** <enter>
+     * Returns the current health bar image.
+     * 
+     * @return Image of the health bar.
+     */
     public Image getImage(){
         return image.getImage(); // Return the current health bar image
     }
 
+    /** <enter>
+     * Returns the bounds of the health bar.
+     * 
+     * @return Rectangle representing the bounds of the health bar.
+     */
     public Rectangle getBounds() {
         bounds.setBounds(x,y,200,800);
         return bounds;
     }
 
+    /** <enter>
+     * Sets the health value and updates the health bar image accordingly.
+     * 
+     * @param health New health value.
+     */
     public void setHealth(int health) {
         this.health = health;
         updateIcon(); // Update the image whenever health changes
     }
 
+    /** <enter>
+     * Returns the current health value.
+     * 
+     * @return Current health value.
+     */
     public int getHealth() {
         return health;
     }
 
+    /** <enter>
+     * Updates the health bar image based on the current health value.
+     * The image file is determined by the health value (e.g., healthbar-10.png for full health).
+     */
     public void updateIcon() {
         // Determine the image file based on health
         String imagePath = "images/healthbar/healthbar-" + health + ".png";
@@ -57,10 +88,20 @@ public class Health {
         }
     }
 
+    /** <enter>
+     * Returns the image of the health bar.
+     * 
+     * @return Image of the health bar.
+     */
     public Image getBar() {
         return image.getImage();
     }
 
+    /** <enter>
+     * Returns the X and Y coordinates of the health bar repsectively.
+     * 
+     * @return X and Y coordinates as an integer
+     */
     public int getX() {
         return x;
     }

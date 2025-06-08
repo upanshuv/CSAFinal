@@ -1,11 +1,5 @@
 import javax.swing.JLabel;
 
-/**
- * this class is an abstract class intended to represent
- * any interactive character or object which we will be
- * able to add to our game.
- * 
- */
 public abstract class GameObject extends JLabel {
 
     public GameObject(int x, int y) {

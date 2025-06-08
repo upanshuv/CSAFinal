@@ -20,7 +20,7 @@ public class TenzinEnemy {
         timerCount = 0;
         bounds = new Rectangle(x, y, 50, 50); // default size of enemy
         idleImages = new ArrayList<>();
-        idleImages.add(new ImageIcon("./images/Enemies/TenzinEnemy/Idle/Idle0.png"));
+        idleImages.add(new ImageIcon("./images/Enemies/TenzinEnemy/Idle0.png"));
     }
 
     public Rectangle getBounds() {
