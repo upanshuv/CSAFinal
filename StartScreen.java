@@ -10,11 +10,14 @@ public class StartScreen extends JPanel {
         this.setLayout(null);
 
         // Load background image
-        backgroundImage = new ImageIcon("./images/background/cowboyEllis.jpeg").getImage();
+        backgroundImage = new ImageIcon("./images/background/startscreen.png").getImage();
 
-        JButton startButton = new JButton("Start Game");
-        startButton.setBounds(200, 250, 100, 40);
+        JButton startButton = new JButton("");
+        startButton.setBounds(192, 235, 100, 40);
         startButton.addActionListener(startListener);
+        startButton.setOpaque(false);
+        startButton.setContentAreaFilled(false);
+        startButton.setBorderPainted(false);
         this.add(startButton);
     }
 
