@@ -4,6 +4,7 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
@@ -16,6 +17,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 
 public class GamePanel extends JPanel implements ActionListener {
 
@@ -56,12 +61,16 @@ public class GamePanel extends JPanel implements ActionListener {
     private Health enemyHealth;
     private Mercy mercyBar;
     private ArrayList<FallingBlock> fallingBlocksAtDifferentSpeeds; // used to store falling blocks for the "fallingBlocksAtDifferentSpeeds" attack
-    private int renderableBlocks;
     private Room activeRoom;
     //player will be invincible until this frame reached
     private int invincibilityFrame;
     private boolean tookDamageThisFrame;
     private int mercyLevel;
+    private int numActiveEnemies;
+    private String taleSound;
+    private String runeSound;
+    private static Clip currentClip;
+    private int score;
 
     public GamePanel() {
 
@@ -74,10 +83,13 @@ public class GamePanel extends JPanel implements ActionListener {
         turn = true;
         heroXBeforeBattle = 0;
         heroYBeforeBattle = 0;
-        renderableBlocks = 0;
+        numActiveEnemies = 10; // used to track number of active enemies in the room
+    
         centerSoul = false; // used to center the soul in the middle of the screen when enemy turn starts
         
         activeRoom = null;
+
+        score = 0;
 
         //INIT ATTACKS //
 
@@ -231,6 +243,12 @@ public class GamePanel extends JPanel implements ActionListener {
         mercyBar = new Mercy(0, 45);
         // END INIT BARS //
 
+        // INIT SOUNDS //
+        taleSound = "./sounds/Undertale-Ruins.wav";
+        runeSound = "./sounds/Deltarune-Battle.wav";
+        playSound(taleSound);
+        // END INIT SOUNDS //
+
         // keylistener here //
         this.addKeyListener(new KeyListener() {
 
@@ -354,13 +372,14 @@ public class GamePanel extends JPanel implements ActionListener {
 
             private void doMercy() {
                 if (mercyLevel >= 5) {
-                    System.out.println("You spared the enemy!");
-                    //TODO implement mercy logic
-                    battleActive = false;
-                    turn = true;
-                    hero.setSoulMode(false);
-                    hero.setLocation(heroXBeforeBattle, heroYBeforeBattle); // reset hero position
-                    setRoom(activeRoom);
+                    // make enemytrigger blue 
+                    for (EnemyTrigger enemy : enemyTriggers) {
+                        if (!enemy.isMercied()) {
+                            enemy.setMercied(true);
+                            break;
+                        }
+                    }
+                    endBattle();
                 } else {
                     System.out.println("You need to increase your mercy level to spare the enemy.");
                     System.out.println("You Can increase your mercy level by ACTing on the enemy.");
@@ -464,6 +483,8 @@ public class GamePanel extends JPanel implements ActionListener {
 
         activeEnemyHealth = 10; // reset active enemy health
         enemyHealth.setHealth(activeEnemyHealth);
+        mercyLevel = 0; // reset mercy level
+        mercyBar.setMercy(0); 
         //TODO implement buttons
         this.setBackground("./images/background/GenericBattle.png");
 
@@ -481,6 +502,8 @@ public class GamePanel extends JPanel implements ActionListener {
         battleActive = true;
 
         randomEnemyInt = (int) (Math.random() * genericEnemies.size()); //will be used to select a random enemy
+
+        playSound(runeSound);
     }
 
     @Override
@@ -546,14 +569,16 @@ public class GamePanel extends JPanel implements ActionListener {
         if (!battleActive && triggersPlaced){
             for (int i = 0; i < enemyTriggers.size(); i++) {
                 EnemyTrigger enemy = enemyTriggers.get(i);
-                g.setColor(java.awt.Color.RED);
+                if (enemy.isMercied()) {
+                    g.setColor(java.awt.Color.BLUE);
+                } else {
+                    g.setColor(java.awt.Color.RED);
+                }
                 Rectangle bounds = enemy.getBounds();
                 g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height); // This line of code provided by ChatGPT
-                if (enemy.hasCollided(hero) && !battleActive) {
+                if (enemy.hasCollided(hero) && !battleActive && !enemy.isMercied()) {
                     System.out.println("Enemy Triggered");
                     activateBattleMode();
-                    enemyTriggers.remove(enemy);
-                    i--;
                     repaint();
                     break;
                 }
@@ -666,9 +691,46 @@ public class GamePanel extends JPanel implements ActionListener {
 
         }
 
+        // texts
+        if (!battleActive){
+            g.setColor(Color.WHITE);
+            g.setFont(new Font("Arial", Font.BOLD, 24));
+            g.drawString("Score: " + score, 10, 30); // display score
+        }
+        if (battleActive)
+        {
+            g.setColor(Color.WHITE);
+            g.setFont(new Font("Arial", Font.BOLD, 14));
+            g.drawString("Your Health", 180, 20);
+            Graphics g2 = g;
+            g2.setColor(Color.WHITE);
+            g2.setFont(new Font("Arial", Font.BOLD, 14));
+            g2.drawString("Mercy Level", 120, 65);
+            Graphics g3 = g;
+            g3.setColor(Color.WHITE);
+            g3.setFont(new Font("Arial", Font.BOLD, 14));
+            g3.drawString("Enemy Health", 220, 40);
+        }
+
     }
 
-    private void doDamageToPlayer() {
+    public void endBattle() {
+        numActiveEnemies--; // decrease number of active enemies in the room
+        if (numActiveEnemies <= 0) {
+            System.out.println("All enemies defeated");
+        }
+        System.out.println("Battle ended");
+        battleActive = false;
+        turn = true; // reset turn to player
+        hero.setSoulMode(false); // reset soul mode
+        hero.setLocation(heroXBeforeBattle, heroYBeforeBattle); // reset hero position
+        setRoom(activeRoom); // reset room
+        activeAttack = ""; // reset active attack
+        score += 1;
+        playSound(taleSound);
+    }
+
+    public void doDamageToPlayer() {
         playerHealth.setHealth(playerHealth.getHealth() - 1); // deal damage to the player
         System.out.println("Player took damage");
         invincibilityFrame = frameCount + 60; // player will be invincible for 60 frames
@@ -718,6 +780,29 @@ public class GamePanel extends JPanel implements ActionListener {
         }
     }
 
+    //for sounds
+    public static void playSound(String location) {
+        try {
+
+            if (currentClip != null && currentClip.isRunning()) {
+                currentClip.stop();
+                currentClip.close();
+            }
+    
+            File soundPath = new File(location);
+            if (soundPath.exists()) {
+                AudioInputStream audioInput = AudioSystem.getAudioInputStream(soundPath);
+                currentClip = AudioSystem.getClip();
+                currentClip.open(audioInput);
+                currentClip.start();
+            } else {
+                System.out.println("Cant find music file");
+            }
+        } catch (Exception e) {
+            System.err.println("Error playing sound: " + e.getMessage());
+        }
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
 
@@ -744,12 +829,7 @@ public class GamePanel extends JPanel implements ActionListener {
             //battle ending/enemy defeated logic 
             if (activeEnemyHealth <= 0) {
                 //battle ending logic
-                System.out.println("Enemy Defeated");
-                battleActive = false;
-                turn = true;
-                hero.setSoulMode(false);
-                hero.setLocation(heroXBeforeBattle, heroYBeforeBattle); // reset hero position
-                setRoom(activeRoom);
+                endBattle();
             }
 
             //attack logic here
@@ -788,7 +868,6 @@ public class GamePanel extends JPanel implements ActionListener {
         repaint();
 
         // Remove all target logic here
-
         hero.getPanelHeight(this.getHeight());
         hero.getPanelWidth(this.getWidth());
     }
