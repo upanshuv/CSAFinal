@@ -3,6 +3,8 @@ import javax.swing.JFrame;
 
 public class Animation {
 
+    private boolean startScreenDone = false; // used for satrting the actual game
+
     /**
      * main method which instantiates our JFrame and
      * our gamePanel.   

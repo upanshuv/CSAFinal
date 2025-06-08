@@ -4,15 +4,17 @@ import javax.swing.ImageIcon;
 
 public class TenzinEnemy {
 
-    private ArrayList<ImageIcon> idleImages;
-    //have these be set to constants in the constructor (determine best location)
-    private Rectangle bounds;
-    private int x;
-    private int y;
-    private int timerCount;
-    private int i;
+    private ArrayList<ImageIcon> idleImages; // List to hold images
+    private Rectangle bounds; // Rectangle for enemy rendering
+    private int x; // x-coordinate of the enemy
+    private int y; // y-coordinate of the enemy
+    private int timerCount; // Timer to control image updates
+    private int i; // Index for the current image
 
-    
+
+    /** <enter> * TenzinEnemy constructor initializes the enemy with default values.
+     * It sets the initial position, initializes the image list, and sets the bounds.
+     */    
     public TenzinEnemy() {
         x = 100;
         y = 100;
@@ -23,6 +25,10 @@ public class TenzinEnemy {
         idleImages.add(new ImageIcon("./images/Enemies/TenzinEnemy/Idle0.png"));
     }
 
+    /** <enter> * 
+     * Returns the current bounds of the enemy.
+     * @return Rectangle representing the bounds of the enemy.
+     */
     public Rectangle getBounds() {
         return bounds;
     }
