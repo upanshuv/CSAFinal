@@ -1,29 +1,36 @@
-import javax.swing.JFrame;
-
+import javax.swing.*;
 
 public class Animation {
-
-    private boolean startScreenDone = false; // used for satrting the actual game
-
-    /**
-     * main method which instantiates our JFrame and
-     * our gamePanel.   
-     */
+    private static JFrame frame;
+    private static GamePanel gamePanel;
 
     public static void main(String[] args) {
-        
-        JFrame frame = new JFrame("Undercoooked"); 
+        frame = new JFrame("Undercoooked"); 
         frame.setBounds(50, 50, 500, 500);
-
         frame.setResizable(false);
 
-        GamePanel gamePanel = new GamePanel();
-        
+        gamePanel = new GamePanel();
 
-        frame.add(gamePanel);
+        StartScreen startScreen = new StartScreen(e -> {
+            frame.add(gamePanel);
+            frame.revalidate();
+            frame.repaint();
+            gamePanel.requestFocusInWindow();
+        });
+
+        frame.add(startScreen);
 
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
 
+    // Call this from GamePanel when game ends
+    public static void showEndScreen(boolean win) {
+        SwingUtilities.invokeLater(() -> {
+            frame.getContentPane().removeAll();
+            frame.add(new EndScreen(win));
+            frame.revalidate();
+            frame.repaint();
+        });
     }
 }

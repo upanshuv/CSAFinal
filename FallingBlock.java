@@ -45,6 +45,15 @@ public class FallingBlock {
         this.active = active;
     }
 
+    
+    /** <enter>
+     * update the position of blocks moving up 
+     */
+    public void updateUp(){
+        y -= speed;
+        bounds = new Rectangle(x,y,width,height);
+    }
+
     /** <enter>
      * @return  whether or not the block is active (falling)
      */

@@ -72,7 +72,7 @@ public class Mercy {
      *
      * @return The current health value.
      */
-    public int getmercy() {
+    public int getMercy() {
         return mercy;
     }
 

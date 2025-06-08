@@ -33,6 +33,11 @@ public class TenzinEnemy {
         return bounds;
     }
 
+    /** <enter> * 
+     * updates the enemy's state, including the image based on a timer.
+     * This method is called every frame to update the enemy's appearance.
+     * this method was not implemented
+     */
     public void update(){
         timerCount++;
         if (timerCount % 10 == 0) {
@@ -46,6 +51,10 @@ public class TenzinEnemy {
         }
     }
 
+    /** <enter> * 
+     * Returns the current image of the enemy.
+     * @return ImageIcon representing the current image of the enemy.
+     */
     public ImageIcon getImage() {
         return idleImages.get(0); // Return the first image for now
     }

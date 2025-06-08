@@ -56,6 +56,8 @@ public class GamePanel extends JPanel implements ActionListener {
     private int fightAnimationIterator; //iterates through the fight animation frames
     private ArrayList<ImageIcon> fightAnimation; //arraylist of fight animation frames
     private int activeEnemyHealth; // health of the active enemy (used for battle logic)
+    private int bulletBoardX; // x position of the bullet board (used for rendering)
+    private int bulletBoardWidth; // width of bullet board (used for rendering)
     private TenzinEnemy tenzinEnemy; //enemy object for the Tenzin enemy
 
     // --- Battle Buttons ---
@@ -73,6 +75,7 @@ public class GamePanel extends JPanel implements ActionListener {
     // --- Attack Objects ---
     private ArrayList<FallingBlock> fallingBlocks; // for "fallingBlocks" attack
     private ArrayList<FallingBlock> fallingBlocksAtDifferentSpeeds; // for "fallingBlocksAtDifferentSpeeds" attack
+    private ArrayList<FallingBlock> fallingBlocksUp; // for "falingBlocksUp" attack
 
     // --- Health & Mercy Bars ---
     private Health playerHealth; // player health bar
@@ -123,30 +126,21 @@ public class GamePanel extends JPanel implements ActionListener {
         fightAnimationActive = false;
         gameOver = false;
 
+        bulletBoardX = 155; 
+        bulletBoardWidth = 150;
 
         //INIT ATTACKS //
 
         attacks = new ArrayList<String>();
         attacks.add("fallingBlocks");
         attacks.add("fallingBlocksAtDifferentSpeeds");
+        attacks.add("fallingBlocksUp");
         activeAttack = "";
 
-        fallingBlocks = new ArrayList<FallingBlock>();
-        for (int i = 0; i < 10; i++) {
-            int x = (70 * i) + (int)(Math.random() * 10);
-            int y = 0; // start at the top
-            int width = 30, height = 30, speed = 8;
-            fallingBlocks.add(new FallingBlock(x, y, width, height, speed));                         
-        }
-
+        fallingBlocks = new ArrayList<FallingBlock>(); 
         fallingBlocksAtDifferentSpeeds = new ArrayList<FallingBlock>();
-        for (int i = 0; i < 10; i++) {
-            int x = 100 * i;
-            int y = 0; 
-            int width = 30, height = 30;
-            int speed = (int) (Math.random() * 10 + 5); // random speed between 1 and 5
-            fallingBlocksAtDifferentSpeeds.add(new FallingBlock(x, y, width, height, speed));
-        }
+        fallingBlocksUp = new ArrayList<FallingBlock>();
+        
 
         //INIT ANIMATIONS //
 
@@ -491,6 +485,7 @@ public class GamePanel extends JPanel implements ActionListener {
      * It is called when the player uses an item during battle.
      */
     public void doItem(){
+        itemButton.setSelected(false);
         playerHealth.setHealth(playerHealth.getHealth() + 1); // heal player by 1
         setEnemyTurn(); 
     }
@@ -699,6 +694,17 @@ public class GamePanel extends JPanel implements ActionListener {
                         }
                         tookDamageThisFrame = false; // reset tookDamageThisFrame for the next frame
                         break;
+                    case "fallingBlocksUp":
+                        g.setColor(Color.GREEN);
+                        for (FallingBlock block : fallingBlocksUp) {
+                            if (!tookDamageThisFrame && frameCount > invincibilityFrame && block.getBounds().intersects(hero.getSoulHitbox())) {
+                                doDamageToPlayer();
+                            }
+                            System.out.println("falling blocks y" + block.getBounds().getY());
+                            g.fillRect((int)block.getBounds().getX(), (int)block.getBounds().getY(), (int)block.getBounds().getWidth(), (int)block.getBounds().getHeight());
+                        }
+                        tookDamageThisFrame = false;
+                        break;
                 }
             }
 
@@ -817,24 +823,38 @@ public class GamePanel extends JPanel implements ActionListener {
         switch (activeAttack){
             case "fallingBlocks":
                 fallingBlocks.clear(); // clear previous blocks
-                for (int i = 0; i < 10; i++) {
-                    int x = (70 * i) + (int)(Math.random() * 10);
+                for (int i = 0; i < 15; i++) {
+                    int width = 30, height = 30, speed = 5;
+                    int x = bulletBoardX + (int)(Math.random() * (bulletBoardWidth - width));
                     int y = 0; // start at the top
-                    int width = 30, height = 30, speed = 8;
                     fallingBlocks.add(new FallingBlock(x, y, width, height, speed));                         
                 }
+                fallingBlocksUp.add(new FallingBlock(bulletBoardX + bulletBoardWidth, 0, 30, 30, 7));
                 break;
 
             case "fallingBlocksAtDifferentSpeeds":
                 fallingBlocksAtDifferentSpeeds.clear(); // clear previous blocks
-                for (int i = 0; i < 10; i++) {
-                    int x = 100 * i;
-                    int y = 0; 
-                    int width = 30, height = 30;
-                    int speed = (int) (Math.random() * 10 + 5); // random speed between 1 and 5
+                for (int i = 0; i < 8; i++) {
+                    int width = 30; 
+                    int height = 30;
+                    int x = bulletBoardX + (int)(Math.random() * (bulletBoardWidth - width));
+                    int y = 0;
+                    int speed = (int) (Math.random() * 3 + 3); 
                     fallingBlocksAtDifferentSpeeds.add(new FallingBlock(x, y, width, height, speed));
                 }
+                fallingBlocksAtDifferentSpeeds.add(new FallingBlock(bulletBoardX + bulletBoardWidth, 0, 30, 30, 7));
                 break;
+            case "fallingBlocksUp":
+                fallingBlocksUp.clear();
+                for (int i = 0; i < 8; i++){
+                    int width = 30;
+                    int height = 30;
+                    int x = bulletBoardX + (int)(Math.random() * (bulletBoardWidth - width));
+                    int y = this.getHeight() + 200;   
+                    int speed = (int) (Math.random() * 4 + 3); 
+                    fallingBlocksUp.add(new FallingBlock(x, y, width, height, speed));
+                }
+                fallingBlocksUp.add(new FallingBlock(bulletBoardX + bulletBoardWidth, this.getHeight() - 30, 30, 30, 4));
         }
         fightButton.setSelected(false);
         if (battleActive){
@@ -930,12 +950,33 @@ public class GamePanel extends JPanel implements ActionListener {
                     }
                 }
             }
+            else if (activeAttack.equals("fallingBlocksUp")) {
+                for (int i = 0; i < fallingBlocksUp.size(); i++) {
+                    FallingBlock block = fallingBlocksUp.get(i);
+                    block.updateUp(); 
+                    if (block.getBounds().getY() + block.getBounds().getHeight() < 0) {
+                        fallingBlocksUp.remove(i);
+                        i--;
+                    }
+                    if (fallingBlocksUp.size() <= 0) {
+                        turn = true;
+                        fightButton.setSelected(true);
+                        activeAttack = "";
+                    }
+                }
+            }
         }
         frameCount++;
         repaint();
 
-        // Remove all target logic here
         hero.getPanelHeight(this.getHeight());
         hero.getPanelWidth(this.getWidth());
+
+        if (playerHealth.getHealth() <= 0) {
+            Animation.showEndScreen(false); // dead screen
+        }
+        if (score >= 10) {
+            Animation.showEndScreen(true); // win screen
+        }
     }
 }
