@@ -273,7 +273,7 @@ public class GamePanel extends JPanel implements ActionListener {
                     switch (code) {
                         case KeyEvent.VK_UP:
     
-                            hero.setDy(-5);
+                            hero.setDy(-3);
                             hero.setDx(0);
                             hero.setDirection(Direction.UP);
                             
@@ -282,13 +282,13 @@ public class GamePanel extends JPanel implements ActionListener {
                         case KeyEvent.VK_LEFT:
                         
                                 hero.setDy(0);
-                                hero.setDx(-5);
+                                hero.setDx(-3);
                                 hero.setDirection(Direction.LEFT);
                             
                             break;
                         case KeyEvent.VK_DOWN:
                             
-                                hero.setDy(5);
+                                hero.setDy(3);
                                 hero.setDx(0);
                                 hero.setDirection(Direction.DOWN);
                             
@@ -296,7 +296,7 @@ public class GamePanel extends JPanel implements ActionListener {
                         case KeyEvent.VK_RIGHT:
                             
                                 hero.setDy(0);
-                                hero.setDx(5);
+                                hero.setDx(3);
                                 hero.setDirection(Direction.RIGHT);
                             
                             break;
@@ -320,11 +320,11 @@ public class GamePanel extends JPanel implements ActionListener {
                             }
                             break;
                         case KeyEvent.VK_UP:
-                            hero.setDy(-5);
+                            hero.setDy(-3);
                             hero.setDx(0);
                             break;
                         case KeyEvent.VK_LEFT:
-                            hero.setDx(-5);
+                            hero.setDx(-3);
                             hero.setDy(0);
 
                             if (battleActive && turn){
@@ -346,12 +346,12 @@ public class GamePanel extends JPanel implements ActionListener {
                             break;
 
                         case KeyEvent.VK_DOWN:
-                            hero.setDy(5);
+                            hero.setDy(3);
                             hero.setDx(0);
                             break;
                         case KeyEvent.VK_RIGHT:
 
-                            hero.setDx(5);
+                            hero.setDx(3);
                             hero.setDy(0);
                             if (battleActive && turn){
                                 if (fightButton.isSelected()) {

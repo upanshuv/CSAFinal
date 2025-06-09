@@ -30,7 +30,9 @@ what features were you NOT able to implement in your program and why?
     due to time constraints. Code still exists to handle multiple possible
     enemies, but this was never implemented
     -We were not able to create an OST for the game, because of time constraints
-    -
+    -We wannted to include some text for the enemy to say but decided not to as it 
+    did not seem like it would fit the gamer anymore. Code still exists for this with
+    placeholding texts that were used for testing
 
 short reflection of what you learned in creating this assignment
 
