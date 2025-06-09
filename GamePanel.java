@@ -90,6 +90,7 @@ public class GamePanel extends JPanel implements ActionListener {
     // --- Sound ---
     private String taleSound; // base game music
     private String runeSound; // battle music
+    private String deathSound;
     private static Clip currentClip; // current sound clip being played
 
 
@@ -257,6 +258,7 @@ public class GamePanel extends JPanel implements ActionListener {
         // INIT SOUNDS //
         taleSound = "./sounds/Undertale-Ruins.wav";
         runeSound = "./sounds/Deltarune-Battle.wav";
+        deathSound = "./sounds/Deltarune OST - Hip Shop Extended-[AudioTrimmer.com] (1).wav";
         playSound(taleSound);
         // END INIT SOUNDS //
 
@@ -824,7 +826,9 @@ public class GamePanel extends JPanel implements ActionListener {
             case "fallingBlocks":
                 fallingBlocks.clear(); // clear previous blocks
                 for (int i = 0; i < 15; i++) {
-                    int width = 30, height = 30, speed = 5;
+                    int width = 30; 
+                    int height = 30;
+                    int speed = 8;
                     int x = bulletBoardX + (int)(Math.random() * (bulletBoardWidth - width));
                     int y = 0; // start at the top
                     fallingBlocks.add(new FallingBlock(x, y, width, height, speed));                         
@@ -839,7 +843,7 @@ public class GamePanel extends JPanel implements ActionListener {
                     int height = 30;
                     int x = bulletBoardX + (int)(Math.random() * (bulletBoardWidth - width));
                     int y = 0;
-                    int speed = (int) (Math.random() * 3 + 3); 
+                    int speed = (int) (Math.random() * 2 + 5); 
                     fallingBlocksAtDifferentSpeeds.add(new FallingBlock(x, y, width, height, speed));
                 }
                 fallingBlocksAtDifferentSpeeds.add(new FallingBlock(bulletBoardX + bulletBoardWidth, 0, 30, 30, 7));
@@ -851,7 +855,7 @@ public class GamePanel extends JPanel implements ActionListener {
                     int height = 30;
                     int x = bulletBoardX + (int)(Math.random() * (bulletBoardWidth - width));
                     int y = this.getHeight() + 200;   
-                    int speed = (int) (Math.random() * 4 + 3); 
+                    int speed = (int) (Math.random() * 2 + 5); 
                     fallingBlocksUp.add(new FallingBlock(x, y, width, height, speed));
                 }
                 fallingBlocksUp.add(new FallingBlock(bulletBoardX + bulletBoardWidth, this.getHeight() - 30, 30, 30, 4));
@@ -974,6 +978,8 @@ public class GamePanel extends JPanel implements ActionListener {
 
         if (playerHealth.getHealth() <= 0) {
             Animation.showEndScreen(false, false); // dead screen
+            currentClip.stop();
+            playSound(deathSound);
         }
         if (score >= 10) {
             int count = 0;
