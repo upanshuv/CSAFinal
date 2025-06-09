@@ -6,7 +6,6 @@ import javax.swing.Timer;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -26,8 +25,6 @@ public class GamePanel extends JPanel implements ActionListener {
 
     // --- UI & Rendering ---
     private BufferedImage background; //background image
-    private int panelHeight; //height of gamepanel
-    private int panelWidth; //width of gamepanel
     private int frameCount; // total number of rendered frames (used for animations)
     private int score; // used to display user score (from enemies defeated or mercied)
 

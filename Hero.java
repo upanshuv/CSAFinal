@@ -29,7 +29,7 @@ public class Hero extends GameObject {
 
         icons = new ImageIcon[4][4];
 
-        soulHitbox = new Rectangle(x, y, 12, 12); // Initialize soul hitbox with the same size as the hero
+        soulHitbox = new Rectangle(x, y, 8, 8); // Initialize soul hitbox with the same size as the hero
 
         for (int i = 0; i < icons.length; i++) {
             for (int j = 0; j < icons[i].length; j++) {
