@@ -258,7 +258,7 @@ public class GamePanel extends JPanel implements ActionListener {
         // INIT SOUNDS //
         taleSound = "./sounds/Undertale-Ruins.wav";
         runeSound = "./sounds/Deltarune-Battle.wav";
-        deathSound = "./sounds/Deltarune OST - Hip Shop Extended-[AudioTrimmer.com] (1).wav";
+        deathSound = "./sounds/deadmusic.wav";
         playSound(taleSound);
         // END INIT SOUNDS //
 
