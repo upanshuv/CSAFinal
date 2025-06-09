@@ -82,7 +82,6 @@ public class Health {
 
         try {
             image = new ImageIcon(imagePath); // Load the new image
-            System.out.println("Health bar updated to: " + imagePath);
         } catch (Exception e) {
             e.printStackTrace();
         }

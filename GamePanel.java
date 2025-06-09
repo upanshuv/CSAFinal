@@ -90,7 +90,8 @@ public class GamePanel extends JPanel implements ActionListener {
     // --- Sound ---
     private String taleSound; // base game music
     private String runeSound; // battle music
-    private String deathSound;
+    //private String deathSound; was lose music but is incorrectly stating file is too large
+    //private String winSound; was win music but is incorrectly stating file is too large
     private static Clip currentClip; // current sound clip being played
 
 
@@ -258,7 +259,8 @@ public class GamePanel extends JPanel implements ActionListener {
         // INIT SOUNDS //
         taleSound = "./sounds/Undertale-Ruins.wav";
         runeSound = "./sounds/Deltarune-Battle.wav";
-        deathSound = "./sounds/deadmusic.wav";
+        //deathSound = "./sounds/deadmusic.wav";
+        //winSound = "./sounds/winmusic.wav";
         playSound(taleSound);
         // END INIT SOUNDS //
 
@@ -312,21 +314,18 @@ public class GamePanel extends JPanel implements ActionListener {
                                 doFIGHT();
                             } else if (actButton.isSelected()) {
                                 doACT();
-                                System.out.println("Act");
                             } else if (itemButton.isSelected()) {
-                                System.out.println("Item");
                                 doItem();
                             } else if (mercyButton.isSelected()) {
                                 doMercy();
-                                System.out.println("Mercy");
                             }
                             break;
                         case KeyEvent.VK_UP:
-                            hero.setDy(-3);
+                            hero.setDy(-5);
                             hero.setDx(0);
                             break;
                         case KeyEvent.VK_LEFT:
-                            hero.setDx(-3);
+                            hero.setDx(-5);
                             hero.setDy(0);
 
                             if (battleActive && turn){
@@ -348,12 +347,12 @@ public class GamePanel extends JPanel implements ActionListener {
                             break;
 
                         case KeyEvent.VK_DOWN:
-                            hero.setDy(3);
+                            hero.setDy(5);
                             hero.setDx(0);
                             break;
                         case KeyEvent.VK_RIGHT:
 
-                            hero.setDx(3);
+                            hero.setDx(5);
                             hero.setDy(0);
                             if (battleActive && turn){
                                 if (fightButton.isSelected()) {
@@ -411,11 +410,8 @@ public class GamePanel extends JPanel implements ActionListener {
                                 doFIGHT();
 
                             } else if (actButton.isSelected()) {
-                                System.out.println("Act");
                             } else if (itemButton.isSelected()) {
-                                System.out.println("Item");
                             } else if (mercyButton.isSelected()) {
-                                System.out.println("Mercy");
                             }
                         }
                         break;
@@ -584,7 +580,6 @@ public class GamePanel extends JPanel implements ActionListener {
                         rooms.get(i).setActive(false);
                         for (Room room : rooms) {
                             if (room.getKey().equals(door.getKey())) {
-                                System.out.println(door.getKey());
                                 room.setActive(true);
                                 String side = door.getSideOfRoom();
                                 int width = (int)door.getBounds().getWidth();
@@ -600,7 +595,6 @@ public class GamePanel extends JPanel implements ActionListener {
                                 }
                                 setRoom(room);
                                 activeRoom = room;
-                                System.out.println("New Room: " + room.getKey());
                             }
                         }
                     }
@@ -625,7 +619,6 @@ public class GamePanel extends JPanel implements ActionListener {
                 Rectangle bounds = enemy.getBounds();
                 g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height); // This line of code provided by ChatGPT
                 if (enemy.hasCollided(hero) && !battleActive && !enemy.isMercied()) {
-                    System.out.println("Enemy Triggered");
                     activateBattleMode();
                     repaint();
                     break;
@@ -673,7 +666,6 @@ public class GamePanel extends JPanel implements ActionListener {
                         for (FallingBlock block : fallingBlocks) {
                             if (!tookDamageThisFrame && frameCount > invincibilityFrame && block.getBounds().intersects(hero.getSoulHitbox())) {
                                 // if the block intersects with the soul, deal damage to the hero
-                                System.out.println("damage");
                                 playerHealth.setHealth(playerHealth.getHealth() - 1); // deal damage to the player
                                 invincibilityFrame = frameCount + 60; // player will be invincible for 60 frames
                                 tookDamageThisFrame = true; // set tookDamageThisFrame to true to prevent multiple damage in one frame
@@ -689,7 +681,6 @@ public class GamePanel extends JPanel implements ActionListener {
                         for (FallingBlock block : fallingBlocksAtDifferentSpeeds) {
                             if (!tookDamageThisFrame && frameCount > invincibilityFrame && block.getBounds().intersects(hero.getSoulHitbox())) {
                                 // if the block intersects with the soul, deal damage to the hero
-                                System.out.println("damage");
                                 doDamageToPlayer();
                             } 
                             g.fillRect((int)block.getBounds().getX(), (int)block.getBounds().getY(), (int)block.getBounds().getWidth(), (int)block.getBounds().getHeight());
@@ -702,7 +693,6 @@ public class GamePanel extends JPanel implements ActionListener {
                             if (!tookDamageThisFrame && frameCount > invincibilityFrame && block.getBounds().intersects(hero.getSoulHitbox())) {
                                 doDamageToPlayer();
                             }
-                            System.out.println("falling blocks y" + block.getBounds().getY());
                             g.fillRect((int)block.getBounds().getX(), (int)block.getBounds().getY(), (int)block.getBounds().getWidth(), (int)block.getBounds().getHeight());
                         }
                         tookDamageThisFrame = false;
@@ -781,9 +771,7 @@ public class GamePanel extends JPanel implements ActionListener {
     public void endBattle() {
         numActiveEnemies--; // decrease number of active enemies in the room
         if (numActiveEnemies <= 0) {
-            System.out.println("All enemies defeated");
         }
-        System.out.println("Battle ended");
         battleActive = false;
         turn = true; // reset turn to player
         hero.setSoulMode(false); // reset soul mode
@@ -801,7 +789,6 @@ public class GamePanel extends JPanel implements ActionListener {
      */
     public void doDamageToPlayer() {
         playerHealth.setHealth(playerHealth.getHealth() - 1); // deal damage to the player
-        System.out.println("Player took damage");
         invincibilityFrame = frameCount + 60; // player will be invincible for 60 frames
         tookDamageThisFrame = true; // set tookDamageThisFrame to true to prevent multiple damage in one frame
     }
@@ -813,7 +800,6 @@ public class GamePanel extends JPanel implements ActionListener {
      */
     public void setEnemyTurn(){
         
-        System.out.println("Active Enemy Health: " + activeEnemyHealth);
         fightAnimationActive = false;
         fightAnimationIterator = 0;
         damageAnimationCounter = frameCount + 60; // Set the damage animation to display for 3 seconds
@@ -907,7 +893,6 @@ public class GamePanel extends JPanel implements ActionListener {
                     heroXBeforeBattle = hero.getX();
                     heroYBeforeBattle = hero.getY();
                     hero.setPosition(250, 300);
-                    System.out.println("centered");
                     centerSoul = false; // only center once
                 }
                 hero.update();
@@ -979,7 +964,7 @@ public class GamePanel extends JPanel implements ActionListener {
         if (playerHealth.getHealth() <= 0) {
             Animation.showEndScreen(false, false); // dead screen
             currentClip.stop();
-            playSound(deathSound);
+            //playSound(deathSound);
         }
         if (score >= 10) {
             int count = 0;
@@ -988,6 +973,7 @@ public class GamePanel extends JPanel implements ActionListener {
                     count++;
                 }
             }
+            //playSound(winSound);
             if (count < 10) {
                 Animation.showEndScreen(true, false); // win screen
             } else {

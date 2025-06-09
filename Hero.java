@@ -48,7 +48,6 @@ public class Hero extends GameObject {
      */
     public void setSoulMode(boolean soulMode) { //used to keep track of soulMode within class for bounds
         this.soulMode = soulMode;
-        System.out.println("Soul mode set to: " + soulMode);
     }
 
     /**<enter>
