@@ -108,7 +108,7 @@ public class GamePanel extends JPanel implements ActionListener {
         mercyLevel = 0;
         activeEnemyHealth = 0;
         score = 0;
-        numActiveEnemies = 3;
+        numActiveEnemies = 10;
 
         frameCount = 0;
         fightAnimationIterator = 0;
@@ -211,7 +211,7 @@ public class GamePanel extends JPanel implements ActionListener {
         // INIT ENEMY TRIGGERS //
 
         enemyTriggers = new ArrayList<EnemyTrigger>();
-        for (int i = 0; i < numActiveEnemies; i++) {
+        for (int i = 0; i < 10; i++) {
             enemyTriggers.add(new EnemyTrigger(9999, 9999));
         }
 
@@ -606,7 +606,7 @@ public class GamePanel extends JPanel implements ActionListener {
         
         // enemy trigger rendering
         if (!battleActive && triggersPlaced){
-            for (int i = 0; i < numActiveEnemies; i++) {
+            for (int i = 0; i < enemyTriggers.size(); i++) {
                 EnemyTrigger enemy = enemyTriggers.get(i);
                 if (enemy.isMercied()) {
                     g.setColor(java.awt.Color.BLUE);
@@ -766,9 +766,7 @@ public class GamePanel extends JPanel implements ActionListener {
      * It also plays the tale sound and increases the score by 1.
      */
     public void endBattle() {
-        if (activeEnemyHealth == 0){
-            numActiveEnemies--; // decrease number of active enemies in the room
-        }
+        numActiveEnemies--; // decrease number of active enemies in the room
         if (numActiveEnemies <= 0) {
         }
         battleActive = false;
@@ -813,7 +811,7 @@ public class GamePanel extends JPanel implements ActionListener {
                 for (int i = 0; i < 15; i++) {
                     int width = 30; 
                     int height = 30;
-                    int speed = 4;
+                    int speed = 6;
                     int x = bulletBoardX + (int)(Math.random() * (bulletBoardWidth - width));
                     int y = 0; // start at the top
                     fallingBlocks.add(new FallingBlock(x, y, width, height, speed));                         
@@ -840,7 +838,7 @@ public class GamePanel extends JPanel implements ActionListener {
                     int height = 30;
                     int x = bulletBoardX + (int)(Math.random() * (bulletBoardWidth - width));
                     int y = this.getHeight() + 200;   
-                    int speed = (int) (Math.random() * 2 + 3); 
+                    int speed = (int) (Math.random() * 2 + 5); 
                     fallingBlocksUp.add(new FallingBlock(x, y, width, height, speed));
                 }
                 fallingBlocksUp.add(new FallingBlock(bulletBoardX + bulletBoardWidth, this.getHeight() - 30, 30, 30, 4));
@@ -965,7 +963,7 @@ public class GamePanel extends JPanel implements ActionListener {
             currentClip.stop();
             //playSound(deathSound);
         }
-        if (score >= 3) {
+        if (score >= 10) {
             int count = 0;
             for (int i=0; i< enemyTriggers.size(); i++) {
                 if (enemyTriggers.get(i).isMercied()) {
@@ -973,7 +971,7 @@ public class GamePanel extends JPanel implements ActionListener {
                 }
             }
             //playSound(winSound);
-            if (count < 3) {
+            if (count < 10) {
                 Animation.showEndScreen(true, false); // win screen
             } else {
                 Animation.showEndScreen(true, true); // mercy screen
