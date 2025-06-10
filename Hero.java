@@ -12,7 +12,7 @@ public class Hero extends GameObject {
     private int dy; // vertical velocity
     private int panelHeight = 0; // height of the panel to restrict movement
     private int panelWidth = 0; // width of the panel to restrict movement
-    private int speed = 0; // speed of the hero
+    private int speed; // speed of the hero
     private boolean soulMode; // boolean to check if the hero is in soul mode
     private Image soulImage; // image for the soul
     private Rectangle soulHitbox; // hitbox for the soul, used to check collisions in soul mode
@@ -26,6 +26,7 @@ public class Hero extends GameObject {
         dx = 0;
         dy = 0;
         soulMode = false;
+        speed = 0;
 
         icons = new ImageIcon[4][4];
 
@@ -210,7 +211,7 @@ public class Hero extends GameObject {
      * @param speed speed of the hero
      */
     public void setSpeed(int speed){
-        this.speed = 20;
+        speed = 50;
     }
 
     /** <enter>
