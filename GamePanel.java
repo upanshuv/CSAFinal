@@ -811,7 +811,7 @@ public class GamePanel extends JPanel implements ActionListener {
                 for (int i = 0; i < 15; i++) {
                     int width = 30; 
                     int height = 30;
-                    int speed = 8;
+                    int speed = 4;
                     int x = bulletBoardX + (int)(Math.random() * (bulletBoardWidth - width));
                     int y = 0; // start at the top
                     fallingBlocks.add(new FallingBlock(x, y, width, height, speed));                         
@@ -826,7 +826,7 @@ public class GamePanel extends JPanel implements ActionListener {
                     int height = 30;
                     int x = bulletBoardX + (int)(Math.random() * (bulletBoardWidth - width));
                     int y = 0;
-                    int speed = (int) (Math.random() * 2 + 5); 
+                    int speed = (int) (Math.random() * 2 + 3); 
                     fallingBlocksAtDifferentSpeeds.add(new FallingBlock(x, y, width, height, speed));
                 }
                 fallingBlocksAtDifferentSpeeds.add(new FallingBlock(bulletBoardX + bulletBoardWidth, 0, 30, 30, 7));
