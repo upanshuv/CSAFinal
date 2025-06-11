@@ -108,7 +108,7 @@ public class GamePanel extends JPanel implements ActionListener {
         mercyLevel = 0;
         activeEnemyHealth = 0;
         score = 0;
-        numActiveEnemies = 10;
+        numActiveEnemies = 3;
 
         frameCount = 0;
         fightAnimationIterator = 0;
